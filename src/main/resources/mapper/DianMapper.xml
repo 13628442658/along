@@ -63,7 +63,7 @@
 	</delete>
 
 	<delete id="deleteAll" parameterType="String">
-		delete from dianying where did in (#{value})
+		delete from dianying where did in (${value})
 	</delete>
 
 </mapper>
