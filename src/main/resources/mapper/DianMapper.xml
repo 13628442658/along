@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.mapper.DianMapper">
+
+	<select id="findList" resultType="map" parameterType="map">
+		select
+		d.*,GROUP_CONCAT(t.tname) ns,dt.id id from dianying d
+		LEFT JOIN dian_type
+		dt on d.did=dt.did
+		LEFT JOIN type t on t.tid = dt.tid
+		<where>
+			<if test="mh!=null and mh!=''">
+				d.dname like CONCAT('%',#{mh},'%')
+			</if>
+		</where>
+		GROUP BY d.did
+	</select>
+
+	<select id="selectList" resultType="map">
+		select * from type
+	</select>
+
+	<insert id="addDianYing" parameterType="com.baidu.pojo.DianYing"
+		useGeneratedKeys="true" keyProperty="did">
+		insert into dianying
+		(dname,content,dao,day)
+		values(#{dname},#{content},#{dao},#{day})
+	</insert>
+
+	<insert id="addDT" parameterType="map">
+		insert into dian_type(tid,did) values
+		<foreach collection="tids" item="tid" separator=",">
+			(#{tid},#{did})
+		</foreach>
+
+	</insert>
+
+	<select id="selectId" resultType="com.baidu.pojo.DianYing"
+		parameterType="com.baidu.pojo.DianYing">
+		select * from dianying where did =#{did}
+	</select>
+
+	<select id="selectdt" parameterType="com.baidu.pojo.DianYing" resultType="int">
+		select tid
+		from dian_type dt 
+		where
+		dt.did=#{did}
+
+	</select>
+
+
+
+	<insert id="addDianType" parameterType="map">
+		insert into dian_type(tid,did) values 
+		<foreach collection="tids" item="tid" separator=",">
+			(#{tid},#{did})
+		</foreach>
+	</insert>
+	
+	<delete id="delete" parameterType="com.baidu.pojo.DianYing">
+		DELETE from dian_type where did = #{did}
+	</delete>
+
+	<delete id="deleteAll" parameterType="String">
+		delete from dianying where did in (#{value})
+	</delete>
+
+</mapper>
